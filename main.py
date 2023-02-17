@@ -2,6 +2,7 @@
 from threading import Thread, Semaphore
 from requests import get
 from lxml import html
+from json import dumps
 
 NUMBER_OF_PAGES = 1
 CONSEQUTIVE_THREADS = 5
@@ -19,7 +20,7 @@ def parse_page(page_no: int, news_titles: list) -> None:
         [title.text_content() for title in data.cssselect("#news .floating-title h3")], # Title of news elements
         [description.text_content() for description in data.cssselect(".floating-title .news-item p")], # Short description of news elements
         [image.get("src") for image in data.cssselect(".news-item-media-wrap img")], # Images of news elements
-        [link.get("src") for link in data.cssselect(".news-item-media-wrap a")], # Links present in news elements
+        [link.get("href") for link in data.cssselect(".news-item a")], # Links present in news elements
         [published_on.text_content() for published_on in data.cssselect(".meta-line .meta-item-time")], # Date of publication of news
     )
     s.release()
@@ -27,7 +28,7 @@ def parse_page(page_no: int, news_titles: list) -> None:
         "title": news[0],
         "description": news[1],
         "image": news[2],
-        "link": news[3],
+        "link": "https://www.gsmarena.com/" + news[3],
         "published_on": news[4]
     } for news in news_list])
 
@@ -45,3 +46,6 @@ def parse_gsmarena_news() -> list:
         threads[page_no].join()
 
     return news_titles
+
+o = parse_gsmarena_news()
+print(dumps(o, indent=4))
