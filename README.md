@@ -5,6 +5,6 @@ Scrape news elements from news explorer page from GSMArena.
 * Uses semaphores to run only given # of requests at a time
 
 ```python
-NUMBER_OF_PAGES = 1 # No of pages to be scraped
-s = Semaphore(5) # No of concurrent requests to be sent
+NUMBER_OF_PAGES = 1
+CONSEQUTIVE_THREADS = 5
 ```

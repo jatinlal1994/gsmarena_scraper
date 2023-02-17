@@ -4,12 +4,16 @@ from requests import get
 from lxml import html
 
 NUMBER_OF_PAGES = 1
-s = Semaphore(5)
+CONSEQUTIVE_THREADS = 5
+
+s = Semaphore(CONSEQUTIVE_THREADS)
+
 
 def parse_page(page_no: int, news_titles: list) -> None:
     """Parse news page present at below URL"""
     s.acquire()
     content = get(f"https://www.gsmarena.com/news.php3?iPage={page_no}", timeout=5).text
+    print("Scraping link https://www.gsmarena.com/news.php3?iPage={page_no}")
     data = html.fromstring(content)
     news_list = zip(
         [title.text_content() for title in data.cssselect("#news .floating-title h3")], # Title of news elements
@@ -26,6 +30,7 @@ def parse_page(page_no: int, news_titles: list) -> None:
         "link": news[3],
         "published_on": news[4]
     } for news in news_list])
+
 
 def parse_gsmarena_news() -> list:
     """Run multiple threads to get new simultaneously"""
